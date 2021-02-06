@@ -1,5 +1,7 @@
 import config
-import telebot 
+import telebot
+
+from telebot import types
 
 bot = telebot.TeleBot(config.TOKEN) 
 
@@ -7,12 +9,14 @@ bot = telebot.TeleBot(config.TOKEN)
 def welcome(message):
     sti = open("static/welcome.webp", 'rb')
     bot.send_sticker(message.chat.id, sti)
-    ans = 'ghbfsfsl'
-    print(f'sfsjfs {ans} ')
-    answer = (f'Вечер в хату, {ans}. ')
+    # ans = 'ghbfsfsl'
+    # print(f'sfsjfs {ans} ')
+    # answer = (f'Вечер в хату, {ans}. ')
+    # Не понял зачем эти 3 строчки вообще написал.
 
     bot.send_message(
-        message.chat.id, answer, format(message.from_user, bot.get_me()),
+        message.chat.id,
+        "Добро пожаловать, {0.first_name}!\nЯ - <b>{1.first_name}</b>, бот .".format(message.from_user, bot.get_me()),
         parse_mode='html'
     )
 
