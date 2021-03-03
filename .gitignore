@@ -1,2 +1,15 @@
+__pycache__
+.idea/
+*.pyc
+*.pyo
+*.retry
+.cache
+MANIFEST
+dist/*.tar.gz
+dist/*.whl
+.merged.requirements.txt
+.pytest_cache
+config.py
+venv/
+.vscode
 .DS_Store
-*.log
