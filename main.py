@@ -1,26 +1,27 @@
 import config
 import telebot
 import random
+import requests
+import weath
 
 from telebot import types
 
-bot = telebot.TeleBot(config.TOKEN) 
+bot = telebot.TeleBot(config.TOKEN)
+url = 'http://api.openweathermap.org/data/2.5/weather'
+api_weather = config.WEATHER
 
 @bot.message_handler(commands=["start"])
 def welcome(message):
     sti = open("static/welcome.webp", 'rb')
     bot.send_sticker(message.chat.id, sti)
-    # ans = 'ghbfsfsl'
-    # print(f'sfsjfs {ans} ')
-    # answer = (f'Вечер в хату, {ans}. ')
-    # Не понял зачем эти 3 строчки вообще написал.
 
     # Keyboard
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     item1 = types.KeyboardButton("🎲 Рандомное число")
     item2 = types.KeyboardButton("😊 Как дела?")
+    item3 = types.KeyboardButton("⛅️ Погода")
 
-    markup.add(item1, item2)
+    markup.add(item1, item2, item3)
 
     bot.send_message(
         message.chat.id,
@@ -28,11 +29,40 @@ def welcome(message):
         parse_mode='html', reply_markup=markup
     )
 
+
+
 @bot.message_handler(content_types=["text"])
 def start_message(message):
     if message.chat.type == 'private':
         if message.text == '🎲 Рандомное число':
             bot.send_message(message.chat.id, str(random.randint(0,100)))
+        elif message.text == '⛅️ Погода':
+            # bot.send_message(message.chat.id, "Введи название.")
+            # weath.weather_send
+
+            def weather_send(message):
+                s_city = message.text
+
+                params = {'APPID': api_weather, 'q': s_city, 'units': 'metric'}
+                result = requests.get(url, params=params)
+                weather = result.json()
+
+                bot.send_message(message.chat.id, "В городе " + str(weather['name'])
+                                 + "Температура" + str(float(weather["main"]['temp'])) + " °C\n"
+                                 + "Максимальная температура " + str(float(weather["main"]['temp_max'])) + " °C\n"
+                                 + "Минимальная температура" + str(float(weather["main"]['temp_min'])) + " °C\n"
+                                 + "Скорость ветра" + str(float(weather["wind"]['speed'])) + " \n")
+
+                if weather["main"]['temp'] < 0:
+                    bot.send_message(message.chat.id, "Надень лучше пуховик.")
+                elif weather["main"]['temp'] > 20:
+                    bot.send_message(message.chat.id, "Шорты и футболка.")
+                else:
+                    bot.send_message(message.chat.id, "Посмотри во что другие одеты.")
+
+
+
+
         elif message.text == '😊 Как дела?':
 
             markup = types.InlineKeyboardMarkup(row_width=2)
